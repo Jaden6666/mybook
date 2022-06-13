@@ -68,7 +68,7 @@
                                                         <td>选择查询方式：</td>
                                                         <td>
                                                                 <select id ="inquireType" name="inquireType">
-                                                                <option value="bookType"selected>按照类型</option>
+<%--                                                                <option value="bookType"selected>按照类型</option>--%>
                                                                 <option value="bookName"selected>按照名称</option>
                                                                 <option value="bookId"selected>按照编号</option>
 <%--                                                                    <c:forEach  items="${types}" var="t">--%>

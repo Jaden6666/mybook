@@ -1,5 +1,6 @@
 package com.jaden.mybook.action;
 
+import com.alibaba.fastjson.JSON;
 import com.jaden.mybook.bean.Book;
 import com.jaden.mybook.biz.BookBiz;
 import com.jaden.mybook.dao.BookDao;
@@ -37,6 +38,7 @@ public class BookServlet extends HttpServlet {
      * /book.let?type=query&pageIndex=1  分页查询(转发request)
      * /book.let?type=details&id=xx  展示书籍详细信息
      * /book.let?type=inquier 查询图书信息
+     * /book.let?type=doajax&name=xx  :使用ajax查询图书名对应的图书信息
      *
      * @param req
      * @param resp
@@ -78,6 +80,15 @@ public class BookServlet extends HttpServlet {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "doajax":
+                String name = req.getParameter("name");
+                Book book2 = bookBiz.getByName(name);
+                if(book2==null){
+                    out.print("{}");//null json 对象
+                }else{
+                    out.print(JSON.toJSONString(book2));
+                }
+                break;
             case "remove":remove(req,resp,out);
                 break;
             case "query":query(req,resp,out);
@@ -98,22 +109,41 @@ public class BookServlet extends HttpServlet {
         String inquireType = req.getParameter("inquireType");
         switch (inquireType){
             case "bookId":
-                //按照id查询
-                long bookId = Long.parseLong(typeText);
-                //2.根据编号获取图书对象
+                //按照id查询-->此处有异常
                 try {
-                    if(bookDao.getById(bookId)!=null) {
-                    Book book = bookBiz.getById(bookId);
-                        //3.将对象保存到req
-                        req.setAttribute("book", book);
-                        //4.转发到 jsp页面
-                        req.getRequestDispatcher("book_inquire_details.jsp").forward(req, resp);
+                    long bookId = Long.parseLong(typeText);
+                    try {
+                        if(bookDao.getById(bookId)!=null) {
+                            Book book = bookBiz.getById(bookId);
+                            //3.将对象保存到req
+                            req.setAttribute("book", book);
+                            //4.转发到 jsp页面
+                            req.getRequestDispatcher("book_inquire_details.jsp").forward(req, resp);
+                        }
+                        else {
+                            out.println("<script>alert('找不到该编号');location.href='book_inquire.jsp';</script>");
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
-                    else {
-                        out.println("<script>alert('找不到该编号');location.href='book_inquire.jsp';</script>");
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                }
+                catch (NumberFormatException e){
+                    out.println("<script>alert('输入非数字');location.href='book_inquire.jsp';</script>");
+                }
+                //2.根据编号获取图书对象
+                break;
+            case "bookName":
+                String name = typeText;
+                Book book2 = bookBiz.getByName(name);
+                if(book2==null){
+                    out.println("<script>alert('找不到该图书');location.href='book_inquire.jsp';</script>");
+                }else{
+                    //补上类型属性
+                    book2 = bookBiz.getById(book2.getId());
+                    //3.将对象保存到req
+                    req.setAttribute("book", book2);
+                    //4.转发到 jsp页面
+                    req.getRequestDispatcher("book_inquire_details.jsp").forward(req, resp);
                 }
                 break;
         }

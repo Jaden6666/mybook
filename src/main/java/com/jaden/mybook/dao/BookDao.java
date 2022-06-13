@@ -121,4 +121,17 @@ public class BookDao {
         connection.close();
         return count;
     }
+    /**
+     * 根据书籍名称查询书籍信息
+     * @param bookName
+     * @return
+     * @throws SQLException
+     */
+    public Book getByName(String bookName) throws SQLException {
+        Connection conn  = DBHelper.getConnection();
+        String sql="select * from book where name=?";
+        Book book = queryRunner.query(conn,sql,new BeanHandler<Book>(Book.class),bookName);
+        DBHelper.close(conn);
+        return book;
+    }
 }

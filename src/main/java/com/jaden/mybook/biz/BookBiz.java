@@ -102,6 +102,16 @@ public class BookBiz {
         }
         return book;//按照bookId将完整的book对象返回
     }
+    //根据名字
+    public Book getByName(String bookName)  {
+        Book book = null;
+        try {
+            book = bookDao.getByName(bookName);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return book;
+    }
 //算页数--通过行数
     public int getPageCount(int pageSize) {
         try {

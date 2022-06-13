@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html >
 <head>
@@ -6,6 +6,59 @@
     <meta http-equiv="keywords"  content = "图书 java jsp"/>
     <meta http-equiv="author" content="phenix"/>
     <link rel="stylesheet" type="text/css" href="./Style/skin.css" />
+    <script src="Js/jquery-3.3.1.min.js"></script>
+    <script>
+
+        $(function(){
+            $("#btnQuery").click(function(){
+                //0.清理
+                $("#tbRecord").find("tbody").html("");
+                //1.获取id
+                var typeId = $(":radio:checked").prop("value");
+                //2.获取关键字
+                var keyword = $("#keyword").val();
+                //3.组成url
+                var url = "record.let?type=doajax&typeId="+typeId+"&keyword="+keyword;
+                //4.发送并获取数据
+                $.get(url,function(data){
+                     console.log(data);
+                //5.数据加载到页面
+                    if(data==="[]" ){
+                        alert("没有信息展示");
+                        return;
+                    }
+
+                    //1. data=>json对象
+                    var records = JSON.parse(data);
+                    for(var i=0;i<records.length;i++){
+                       var record =  records[i];
+                       //tr
+                        var tr = $(" <tr align=\"center\" class=\"d\">");
+                        var tdMName = $(" <td>"+record.memberName+"</td>");
+                        var tdBName = $("<td>"+record.bookName+"</td>");
+                        var tdRentDate = $("<td>"+record.rentDate+"</td>");
+                        var tdBackDate = $("<td>"+ (record.backDate===undefined?"":record.backDate)+"</td>");
+                        var tdDeposit = $("<td>"+record.deposit+"</td>");
+                        //5-td
+                        tr.append(tdMName);
+                        tr.append(tdBName);
+                        tr.append(tdRentDate);
+                        tr.append(tdBackDate);
+                        tr.append(tdDeposit);
+
+                        //加入到表
+                        $("#tbRecord").find("tbody").append(tr);
+                    }
+
+                });
+
+
+            });
+
+        });
+
+    </script>
+
 </head>
     <body>
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -51,10 +104,10 @@
                             <td width="96%">
                                 <fieldset>
                                     <legend>查询条件</legend>
-                                    <table width="100%" border="1" class="cont"  >
+                                    <table width="100%" class="cont"  >
                                         <tr>
                                             <td colspan="8" align="center">
-                                                <input type="radio" name="query" value="0"/>全部 &nbsp;&nbsp;
+                                                <input type="radio" name="query" value="0" checked/>全部 &nbsp;&nbsp;
                                                 <input type="radio" name="query" value="1"/>已归还 &nbsp;&nbsp;
                                                 <input type="radio" name="query" value="2"/>未归还 &nbsp;&nbsp;
                                                 <input type="radio" name="query" value="3"/>最近一周需归还 &nbsp;&nbsp;
@@ -81,47 +134,18 @@
                                     <tr>
                                         <td colspan="2">
                                             <form action="" method="">
-                                                <table width="100%"  class="cont tr_color">
-                                                    <tr>
-                                                        <th><input id="ckAll" type="checkbox" value=""/>全选/全不选</th>
-                                                        <th>书籍名</th>
-                                                        <th>借阅时间</th>
-                                                        <th>应还时间</th>
-                                                        <th>出版社</th>
-                                                        <th>书架</th>
-                                                        <th>定价(元)</th>
-                                                        <th>操作</th>
-                                                    </tr>
-                                                    <tr align="center" class="d">
-                                                        <td><input class="ck" type="checkbox" value="" /></td>
-                                                        <td>罗小黑战记</td>
-                                                        <td>2010-10-01</td>
-                                                        <td>2010-10-31</td>
-                                                        <td>北京联合出版社</td>
-                                                        <td>东区-01-02</td>
-                                                        <td>39.9</td>
-                                                        <td><a href="#">归还</a>&nbsp;&nbsp;<a href="#">续借</a></td>
-                                                    </tr>
-                                                    <tr align="center" class="d">
-                                                        <td><input class="ck" type="checkbox" value="" /></td>
-                                                        <td>罗小黑战记</td>
-                                                        <td>2010-10-01</td>
-                                                        <td>2010-10-31</td>
-                                                        <td>北京联合出版社</td>
-                                                        <td>东区-01-02</td>
-                                                        <td>39.9</td>
-                                                        <td><a href="#">归还</a>&nbsp;&nbsp;<a href="#">续借</a></td>
-                                                    </tr>
-                                                    <tr align="center" class="d">
-                                                        <td><input class="ck" type="checkbox" value="" /></td>
-                                                        <td>罗小黑战记</td>
-                                                        <td>2010-10-01</td>
-                                                        <td>2010-10-31</td>
-                                                        <td>北京联合出版社</td>
-                                                        <td>东区-01-02</td>
-                                                        <td>39.9</td>
-                                                        <td><a href="#">归还</a>&nbsp;&nbsp;<a href="#">续借</a></td>
-                                                    </tr>
+                                                <table width="100%"  class="cont tr_color" id="tbRecord">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>会员名称</th>
+                                                            <th>书籍名称</th>
+                                                            <th>借阅时间</th>
+                                                            <th>归还时间</th>
+                                                            <th>押金(元)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
                                                 </table>
                                             </form>
                                         </td>

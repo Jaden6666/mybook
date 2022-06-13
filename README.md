@@ -3,7 +3,7 @@
 JavaWeb项目图书管理系统
 
 ## 项目环境：
- IDEA2020.3.1  JDK15
+ IDEA2020.3.1  JDK1.8
 
  Tomcat8.5.7 MySql8.028
 
